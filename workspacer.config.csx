@@ -197,7 +197,7 @@ return new Action<IConfigContext>((IConfigContext context) =>
     /* Keybindings */
     Action setKeybindings = () =>
     {
-        KeyModifiers winShift = KeyModifiers.Alt | KeyModifiers.Shift;
+        KeyModifiers Shift = KeyModifiers.Shift;
         KeyModifiers winCtrl = KeyModifiers.Alt | KeyModifiers.Control;
         KeyModifiers win = KeyModifiers.Alt;
 
@@ -206,7 +206,7 @@ return new Action<IConfigContext>((IConfigContext context) =>
         var workspaces = context.Workspaces;
 
         //manager.UnsubscribeAll();
-        manager.Subscribe(MouseEvent.LButtonDown, () => workspaces.SwitchFocusedMonitorToMouseLocation());
+        //manager.Subscribe(MouseEvent.LButtonDown, () => workspaces.SwitchFocusedMonitorToMouseLocation());
 
         // Left, Right keys
         //manager.Subscribe(winCtrl, Keys.Left, () => workspaces.SwitchToPreviousWorkspace(), "switch to previous workspace");
@@ -230,16 +230,16 @@ return new Action<IConfigContext>((IConfigContext context) =>
         //manager.Subscribe(win, Keys.J, () => workspaces.FocusedWorkspace.FocusPreviousWindow(), "focus previous window");
 
         // Add, Subtract keys
-        manager.Subscribe(winCtrl, Keys.Add, () => gapPlugin.IncrementInnerGap(), "increment inner gap");
-        manager.Subscribe(winCtrl, Keys.Subtract, () => gapPlugin.DecrementInnerGap(), "decrement inner gap");
-
-        manager.Subscribe(winShift, Keys.Add, () => gapPlugin.IncrementOuterGap(), "increment outer gap");
-        manager.Subscribe(winShift, Keys.Subtract, () => gapPlugin.DecrementOuterGap(), "decrement outer gap");
+        //manager.Subscribe(winCtrl, Keys.Add, () => gapPlugin.IncrementInnerGap(), "increment inner gap");
+        //manager.Subscribe(winCtrl, Keys.Subtract, () => gapPlugin.DecrementInnerGap(), "decrement inner gap");
+        //
+        //manager.Subscribe(winShift, Keys.Add, () => gapPlugin.IncrementOuterGap(), "increment outer gap");
+        //manager.Subscribe(winShift, Keys.Subtract, () => gapPlugin.DecrementOuterGap(), "decrement outer gap");
 
         // Other shortcuts
         //manager.Subscribe(winCtrl, Keys.P, () => actionMenu.ShowMenu(actionMenuBuilder), "show menu");
         //manager.Subscribe(winShift, Keys.E, () => context.Enabled = !context.Enabled, "toggle enabled/disabled");
-        manager.Subscribe(winShift, Keys.Escape, () => workspaces.FocusedWorkspace.CloseFocusedWindow(), "close window");
+        manager.Subscribe(KeyModifiers.Shift | KeyModifiers.Alt, Keys.D, () => workspaces.FocusedWorkspace.CloseFocusedWindow(), "close window");
         //manager.Subscribe(winShift, Keys.I, () => context.ToggleConsoleWindow(), "toggle console window");
     };
     setKeybindings();
