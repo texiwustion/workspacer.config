@@ -16,6 +16,8 @@ using workspacer.FocusIndicator;
 
 Action<IConfigContext> doConfig = (context) =>
 {
+        context.ConsoleLogLevel = LogLevel.Debug;
+    context.FileLogLevel = LogLevel.Debug;
     // Uncomment to switch update branch (or to disable updates)
     context.Branch = Branch.None;
 
@@ -86,10 +88,12 @@ return new Action<IConfigContext>((IConfigContext context) =>
     {
         ("main", defaultLayouts()),
         ("dev", new ILayoutEngine[] { new HorzLayoutEngine(), new TallLayoutEngine() }),
-        ("extend", defaultLayouts()),
+        ("browser", defaultLayouts()),
         ("chat", defaultLayouts()),
-        ("🎶", defaultLayouts()),
-        ("other", defaultLayouts()),
+        ("5", defaultLayouts()),
+        ("6", defaultLayouts()),
+        ("7", defaultLayouts()),
+        ("hanging", defaultLayouts()),
     };
 
     foreach ((string name, ILayoutEngine[] layouts) in workspaces)
@@ -101,16 +105,35 @@ return new Action<IConfigContext>((IConfigContext context) =>
     context.WindowRouter.AddFilter((window) => !window.ProcessFileName.Equals("1Password.exe"));
     context.WindowRouter.AddFilter((window) => !window.ProcessFileName.Equals("pot.exe"));
     context.WindowRouter.AddFilter((window) => !window.ProcessFileName.Equals("pinentry.exe"));
+    context.WindowRouter.AddFilter((window) => !window.ProcessFileName.Equals("LINQPad 7"));
+    context.WindowRouter.AddFilter((window) => !window.ProcessFileName.Equals("Microsoft Edge WebView2"));
+    context.WindowRouter.AddFilter((window) => !window.ProcessFileName.Equals("LINQPad7.Query"));
+    // filters - title contains
+    context.WindowRouter.AddFilter((window) => !window.Title.Contains("Snipaste"));  
+    context.WindowRouter.AddFilter((window) => !window.Title.Contains("LINQPad"));  
+    context.WindowRouter.AddFilter((window) => !window.Title.Contains("放大镜"));  
 
     // The following filter means that Edge will now open on the correct display
     context.WindowRouter.AddFilter((window) => !window.Class.Equals("ShellTrayWnd"));
+    context.WindowRouter.AddFilter(w =>
+    {
+        var godotWindows = context.Workspaces.FocusedWorkspace.Windows.Count(_w => _w.ProcessName.Equals("LINQPad 7", StringComparison.InvariantCultureIgnoreCase));
+        if (godotWindows > 0)
+        {
+            return false;
+        }
+        return true;
+    });
 
     /* Routes: 应用标题识别->自动移动到工作区 */
     context.WindowRouter.RouteProcessName("TIM", "chat");
     context.WindowRouter.RouteProcessName("微信", "chat");
-    context.WindowRouter.RouteProcessName("StarUML", "extend");
-    context.WindowRouter.RouteTitle("Notepad2", "dev");
+    context.WindowRouter.RouteProcessName("StarUML", "dev");
+    //context.WindowRouter.RouteTitle("Notepad2", "dev");
     context.WindowRouter.RouteTitle("Visual Studio Code", "dev");
+    context.WindowRouter.RouteTitle("Clash for Windows", "hanging");
+    context.WindowRouter.RouteTitle("Sync Home", "hanging");
+    context.WindowRouter.RouteTitle("Microsoft Edge", "browser");
 
     /* Action menu */
     var actionMenu = context.AddActionMenu(new ActionMenuPluginConfig()
@@ -199,12 +222,46 @@ return new Action<IConfigContext>((IConfigContext context) =>
     {
         KeyModifiers Shift = KeyModifiers.Shift;
         KeyModifiers winCtrl = KeyModifiers.Alt | KeyModifiers.Control;
-        KeyModifiers win = KeyModifiers.Alt;
+        KeyModifiers mod = KeyModifiers.LAlt | KeyModifiers.RAlt;
 
         IKeybindManager manager = context.Keybinds;
 
         var workspaces = context.Workspaces;
-
+        
+Type keybindManagerType = context.Keybinds.GetType();
+var subscribeDefaultsMethod = keybindManagerType.GetMethod("SubscribeDefaults", new Type[] { typeof(KeyModifiers) });
+if (subscribeDefaultsMethod != null) {
+    context.Keybinds.UnsubscribeAll();
+    subscribeDefaultsMethod.Invoke(context.Keybinds, new object[] { mod });
+} else {
+    Console.WriteLine("Could not change modifier key: SubscribeDefaults method not found.");
+}
+        //manager.Subscribe(mod, Keys.D1,
+        //        () => workspaces.SwitchToWorkspace(0), "switch to workspace 1");
+        //
+        //    manager.Subscribe(mod, Keys.D2,
+        //        () => workspaces.SwitchToWorkspace(1), "switch to workspace 2");
+        //
+        //    manager.Subscribe(mod, Keys.D3,
+        //        () => workspaces.SwitchToWorkspace(2), "switch to workspace 3");
+        //
+        //    manager.Subscribe(mod, Keys.D4,
+        //        () => workspaces.SwitchToWorkspace(3), "switch to workspace 4");
+        //
+        //    manager.Subscribe(mod, Keys.D5,
+        //        () => workspaces.SwitchToWorkspace(4), "switch to workspace 5");
+        //
+        //    manager.Subscribe(mod, Keys.D6,
+        //        () => workspaces.SwitchToWorkspace(5), "switch to workspace 6");
+        //
+        //    manager.Subscribe(mod, Keys.D7,
+        //        () => workspaces.SwitchToWorkspace(6), "switch to workspace 7");
+        //
+        //    manager.Subscribe(mod, Keys.D8,
+        //        () => workspaces.SwitchToWorkspace(7), "switch to workspace 8");
+        //
+        //    manager.Subscribe(mod, Keys.D9,
+        //        () => workspaces.SwitchToWorkspace(8), "switch to workpsace 9");
         //manager.UnsubscribeAll();
         //manager.Subscribe(MouseEvent.LButtonDown, () => workspaces.SwitchFocusedMonitorToMouseLocation());
 
